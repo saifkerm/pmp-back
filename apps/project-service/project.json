@@ -1,0 +1,23 @@
+{
+    "name": "project-service",
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "apps/project-service/src",
+    "projectType": "application",
+    "targets": {
+      "serve": {
+        "executor": "@nx/js:node",
+        "defaultConfiguration": "development",
+        "options": {
+          "buildTarget": "project-service:build"
+        },
+        "configurations": {
+          "development": {
+            "buildTarget": "project-service:build:development"
+          },
+          "production": {
+            "buildTarget": "project-service:build:production"
+          }
+        }
+      }
+    }
+  }

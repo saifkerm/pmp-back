@@ -42,3 +42,24 @@ Thumbs.db
 .nx/workspace-data
 
 test-output
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Prisma
+node_modules/.prisma/
+
+# Database
+*.db
+*.db-journal
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
