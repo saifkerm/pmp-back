@@ -23,13 +23,9 @@ export class TasksProxyService {
   async createTask(createTaskDto: any, token: string) {
     try {
       const response = await firstValueFrom(
-        this.httpService.post(
-          `${this.taskServiceUrl}/tasks`,
-          createTaskDto,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        ),
+        this.httpService.post(`${this.taskServiceUrl}/tasks`, createTaskDto, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
       );
       return response.data;
     } catch (error) {
@@ -111,8 +107,6 @@ export class TasksProxyService {
     }
   }
 
-  // ==================== ASSIGNEES ====================
-
   async assignTask(id: string, assignTaskDto: any, token: string) {
     try {
       const response = await firstValueFrom(
@@ -130,11 +124,11 @@ export class TasksProxyService {
     }
   }
 
-  async unassignTask(taskId: string, userId: string, token: string) {
+  async unassignTask(id: string, userId: string, token: string) {
     try {
       const response = await firstValueFrom(
         this.httpService.delete(
-          `${this.taskServiceUrl}/tasks/${taskId}/assignees/${userId}`,
+          `${this.taskServiceUrl}/tasks/${id}/assignees/${userId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },
@@ -146,13 +140,11 @@ export class TasksProxyService {
     }
   }
 
-  // ==================== WATCHERS ====================
-
-  async addWatcher(taskId: string, token: string) {
+  async watchTask(id: string, token: string) {
     try {
       const response = await firstValueFrom(
         this.httpService.post(
-          `${this.taskServiceUrl}/tasks/${taskId}/watch`,
+          `${this.taskServiceUrl}/tasks/${id}/watch`,
           {},
           {
             headers: { Authorization: `Bearer ${token}` },
@@ -165,11 +157,339 @@ export class TasksProxyService {
     }
   }
 
-  async removeWatcher(taskId: string, token: string) {
+  async unwatchTask(id: string, token: string) {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.delete(`${this.taskServiceUrl}/tasks/${id}/watch`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+      );
+      return response.data;
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  // ==================== SUBTASKS ====================
+
+  async createSubtask(taskId: string, createSubtaskDto: any, token: string) {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.post(
+          `${this.taskServiceUrl}/tasks/${taskId}/subtasks`,
+          createSubtaskDto,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        ),
+      );
+      return response.data;
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  async findAllSubtasks(taskId: string, token: string) {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.get(
+          `${this.taskServiceUrl}/tasks/${taskId}/subtasks`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        ),
+      );
+      return response.data;
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  async findOneSubtask(taskId: string, subtaskId: string, token: string) {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.get(
+          `${this.taskServiceUrl}/tasks/${taskId}/subtasks/${subtaskId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        ),
+      );
+      return response.data;
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  async updateSubtask(
+    taskId: string,
+    subtaskId: string,
+    updateSubtaskDto: any,
+    token: string,
+  ) {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.patch(
+          `${this.taskServiceUrl}/tasks/${taskId}/subtasks/${subtaskId}`,
+          updateSubtaskDto,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        ),
+      );
+      return response.data;
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  async deleteSubtask(taskId: string, subtaskId: string, token: string) {
     try {
       const response = await firstValueFrom(
         this.httpService.delete(
-          `${this.taskServiceUrl}/tasks/${taskId}/watch`,
+          `${this.taskServiceUrl}/tasks/${taskId}/subtasks/${subtaskId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        ),
+      );
+      return response.data;
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  async toggleSubtask(taskId: string, subtaskId: string, token: string) {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.patch(
+          `${this.taskServiceUrl}/tasks/${taskId}/subtasks/${subtaskId}/toggle`,
+          {},
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        ),
+      );
+      return response.data;
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  async reorderSubtasks(taskId: string, subtaskIds: string[], token: string) {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.patch(
+          `${this.taskServiceUrl}/tasks/${taskId}/subtasks/reorder`,
+          { subtaskIds },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        ),
+      );
+      return response.data;
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  // ==================== ATTACHMENTS ====================
+
+  async uploadAttachment(taskId: string, file: any, token: string) {
+    try {
+      const FormData = require('form-data');
+      const formData = new FormData();
+      formData.append('file', file.buffer, {
+        filename: file.originalname,
+        contentType: file.mimetype,
+      });
+
+      const response = await firstValueFrom(
+        this.httpService.post(
+          `${this.taskServiceUrl}/tasks/${taskId}/attachments`,
+          formData,
+          {
+            headers: {
+              ...formData.getHeaders(),
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        ),
+      );
+      return response.data;
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  async findAllAttachments(taskId: string, token: string) {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.get(
+          `${this.taskServiceUrl}/tasks/${taskId}/attachments`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        ),
+      );
+      return response.data;
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  async findOneAttachment(
+    taskId: string,
+    attachmentId: string,
+    token: string,
+  ) {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.get(
+          `${this.taskServiceUrl}/tasks/${taskId}/attachments/${attachmentId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        ),
+      );
+      return response.data;
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  async getAttachmentDownloadUrl(
+    taskId: string,
+    attachmentId: string,
+    token: string,
+  ) {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.get(
+          `${this.taskServiceUrl}/tasks/${taskId}/attachments/${attachmentId}/download`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        ),
+      );
+      return response.data;
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  async deleteAttachment(taskId: string, attachmentId: string, token: string) {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.delete(
+          `${this.taskServiceUrl}/tasks/${taskId}/attachments/${attachmentId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        ),
+      );
+      return response.data;
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  // ==================== ERROR HANDLING ====================
+
+  // ==================== COMMENTS ====================
+
+  async createComment(taskId: string, createCommentDto: any, token: string) {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.post(
+          `${this.taskServiceUrl}/tasks/${taskId}/comments`,
+          createCommentDto,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        ),
+      );
+      return response.data;
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  async findAllComments(taskId: string, token: string) {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.get(
+          `${this.taskServiceUrl}/tasks/${taskId}/comments`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        ),
+      );
+      return response.data;
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  async findOneComment(taskId: string, commentId: string, token: string) {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.get(
+          `${this.taskServiceUrl}/tasks/${taskId}/comments/${commentId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        ),
+      );
+      return response.data;
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  async updateComment(
+    taskId: string,
+    commentId: string,
+    updateCommentDto: any,
+    token: string,
+  ) {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.patch(
+          `${this.taskServiceUrl}/tasks/${taskId}/comments/${commentId}`,
+          updateCommentDto,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        ),
+      );
+      return response.data;
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  async deleteComment(taskId: string, commentId: string, token: string) {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.delete(
+          `${this.taskServiceUrl}/tasks/${taskId}/comments/${commentId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        ),
+      );
+      return response.data;
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  async getCommentReplies(taskId: string, commentId: string, token: string) {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.get(
+          `${this.taskServiceUrl}/tasks/${taskId}/comments/${commentId}/replies`,
           {
             headers: { Authorization: `Bearer ${token}` },
           },

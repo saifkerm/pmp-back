@@ -4,7 +4,10 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
 import { TasksModule } from './tasks/tasks.module';
+import { SubtasksModule } from './subtasks/subtasks.module';
+import { AttachmentsModule } from './attachments/attachments.module';
 import { JwtStrategy, JwtAuthGuard } from '@pmp-back/common';
+import { CommentsModule } from './comments/comments.module';
 
 @Module({
   imports: [
@@ -22,6 +25,9 @@ import { JwtStrategy, JwtAuthGuard } from '@pmp-back/common';
       }),
     }),
     TasksModule,
+    SubtasksModule,
+    AttachmentsModule,
+    CommentsModule
   ],
   providers: [
     JwtStrategy,
