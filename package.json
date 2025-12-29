@@ -12,14 +12,15 @@
     "start:auth": "nx serve auth-service",
     "start:user": "nx serve user-service",
     "start:project": "nx serve project-service",
+    "start:task": "nx serve task-service",
 
     "// ============ LANCER TOUS LES SERVICES ============": "",
-    "start:services": "concurrently --kill-others-on-fail \"npm:start:auth\" \"npm:start:user\" \"npm:start:gateway\" \"npm:start:project\"",
-    
+    "start:services": "concurrently --kill-others-on-fail \"npm:start:auth\" \"npm:start:user\" \"npm:start:project\" \"npm:start:task\" \"npm:start:gateway\"",
+
     "start:all": "concurrently --kill-others-on-fail \"npm:docker:up\" \"npm:start:services\"",
 
-    "start:dev": "concurrently --names \"AUTH,USER,GATEWAY\" --prefix-colors \"cyan,magenta,green\" \"npm:start:auth\" \"npm:start:user\" \"npm:start:gateway\" \"npm:start:project\"",
-
+    "start:dev": "concurrently --names \"AUTH,USER,PROJECT,TASK,GATEWAY\" --prefix-colors \"cyan,magenta,green,yellow,blue\" \"npm:start:auth\" \"npm:start:user\" \"npm:start:project\" \"npm:start:task\" \"npm:start:gateway\"",
+    
     "// ============ DOCKER ============": "",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
@@ -32,6 +33,7 @@
     "build:auth": "nx build auth-service",
     "build:user": "nx build user-service",
     "build:project": "nx build project-service",
+    "build:task": "nx build task-service",
 
     "// ============ DATABASE ============": "",
     "prisma:generate": "prisma generate --schema=./libs/database/prisma/schema.prisma",

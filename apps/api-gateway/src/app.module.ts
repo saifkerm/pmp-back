@@ -8,6 +8,7 @@ import { UsersModule } from './users/users.module';
 import { ProjectsModule } from './projects/projects.module';
 import { HealthModule } from './health/health.module';
 import { JwtStrategy, JwtAuthGuard, AllExceptionsFilter, LoggingInterceptor } from '@pmp-back/common';
+import { TasksModule } from './tasks/tasks.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { JwtStrategy, JwtAuthGuard, AllExceptionsFilter, LoggingInterceptor } fr
     UsersModule,
     ProjectsModule,
     HealthModule,
+    TasksModule
   ],
   providers: [
     JwtStrategy,  // ✅ Depuis @pmp-back/common

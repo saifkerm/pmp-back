@@ -1,21 +1,50 @@
-/**
- * This is not a production server yet!
- * This is only a minimal backend to get started.
- */
-
-import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app/app.module';
+import { ValidationPipe, Logger } from '@nestjs/common';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { AppModule } from './app.module';
 
 async function bootstrap() {
+  const logger = new Logger('TaskService');
   const app = await NestFactory.create(AppModule);
-  const globalPrefix = 'api';
-  app.setGlobalPrefix(globalPrefix);
-  const port = process.env.PORT || 3000;
-  await app.listen(port);
-  Logger.log(
-    `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`,
+
+  // Global prefix
+  app.setGlobalPrefix('api');
+
+  // Enable CORS
+  app.enableCors({
+    origin: process.env.CORS_ORIGIN || 'http://localhost:4200',
+    credentials: true,
+  });
+
+  // Global validation pipe
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
   );
+
+  // Swagger documentation
+  const config = new DocumentBuilder()
+    .setTitle('Task Service API')
+    .setDescription('Task, subtask, attachment, and dependency management service')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .addTag('Tasks', 'Task management endpoints')
+    .addTag('Subtasks', 'Subtask management endpoints')
+    .addTag('Attachments', 'File attachment endpoints')
+    .addTag('Dependencies', 'Task dependency endpoints')
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api/docs', app, document);
+
+  const port = process.env.TASK_SERVICE_PORT || 3004;
+  await app.listen(port);
+
+  logger.log(`🚀 Task Service running on: http://localhost:${port}/api`);
+  logger.log(`📚 Swagger docs: http://localhost:${port}/api/docs`);
 }
 
 bootstrap();

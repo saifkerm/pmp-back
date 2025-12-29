@@ -1,0 +1,23 @@
+{
+    "name": "task-service",
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "apps/task-service/src",
+    "projectType": "application",
+    "targets": {
+      "serve": {
+        "executor": "@nx/js:node",
+        "defaultConfiguration": "development",
+        "options": {
+          "buildTarget": "task-service:build"
+        },
+        "configurations": {
+          "development": {
+            "buildTarget": "task-service:build:development"
+          },
+          "production": {
+            "buildTarget": "task-service:build:production"
+          }
+        }
+      }
+    }
+  }
