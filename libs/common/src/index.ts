@@ -30,3 +30,4 @@ export * from './lib/common.module';
 
 // Strategies
 export * from './strategies/jwt.strategy';
+export * from './strategies/jwt-refresh.strategy';

@@ -19,6 +19,7 @@ import {
     ApiQuery,
   } from '@nestjs/swagger';
   import { ProjectsProxyService } from './projects-proxy.service';
+  import { CurrentUser } from '@pmp-back/common';
   
   @ApiTags('Projects')
   @ApiBearerAuth()
@@ -34,8 +35,10 @@ import {
     async createProject(
       @Body() createProjectDto: any,
       @Headers('authorization') authorization: string,
+      @CurrentUser() user: any, // Exemple: obtenir l'utilisateur complet { id, email, role }
     ) {
       const token = authorization?.replace('Bearer ', '');
+      // Vous pouvez utiliser user.id, user.email, user.role si nécessaire
       return this.projectsProxyService.createProject(createProjectDto, token);
     }
   
@@ -49,8 +52,10 @@ import {
     async findAllProjects(
       @Query() query: any,
       @Headers('authorization') authorization: string,
+      @CurrentUser('id') userId: string, // Exemple: obtenir uniquement l'ID de l'utilisateur
     ) {
       const token = authorization?.replace('Bearer ', '');
+      // userId contient l'ID de l'utilisateur actuel
       return this.projectsProxyService.findAllProjects(query, token);
     }
   
@@ -61,8 +66,10 @@ import {
     async findOneProject(
       @Param('id') id: string,
       @Headers('authorization') authorization: string,
+      @CurrentUser('email') userEmail: string, // Exemple: obtenir uniquement l'email
     ) {
       const token = authorization?.replace('Bearer ', '');
+      // userEmail contient l'email de l'utilisateur actuel
       return this.projectsProxyService.findOneProject(id, token);
     }
   
@@ -99,6 +106,7 @@ import {
       @Param('id') id: string,
       @Headers('authorization') authorization: string,
     ) {
+      console.log('authorization', authorization)
       const token = authorization?.replace('Bearer ', '');
       return this.projectsProxyService.restoreProject(id, token);
     }

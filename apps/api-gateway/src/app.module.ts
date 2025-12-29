@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { APP_GUARD, APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
@@ -9,6 +9,7 @@ import { ProjectsModule } from './projects/projects.module';
 import { HealthModule } from './health/health.module';
 import { JwtStrategy, JwtAuthGuard, AllExceptionsFilter, LoggingInterceptor } from '@pmp-back/common';
 import { TasksModule } from './tasks/tasks.module';
+import { DatabaseModule } from '@pmp-back/database';
 
 @Module({
   imports: [
@@ -16,14 +17,17 @@ import { TasksModule } from './tasks/tasks.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
+    DatabaseModule, // Import nécessaire pour JwtStrategy qui utilise PrismaService
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
-      useFactory: () => ({
-        secret: process.env.JWT_SECRET,
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
         signOptions: {
-          expiresIn: process.env.JWT_EXPIRES_IN || '15m',
+          expiresIn: configService.get<string>('JWT_EXPIRES_IN', '15m'),
         },
       }),
+      inject: [ConfigService],
     }),
     AuthModule,
     UsersModule,
@@ -32,10 +36,10 @@ import { TasksModule } from './tasks/tasks.module';
     TasksModule
   ],
   providers: [
-    JwtStrategy,  // ✅ Depuis @pmp-back/common
+    JwtStrategy,
     {
       provide: APP_GUARD,
-      useClass: JwtAuthGuard,  // ✅ Depuis @pmp-back/common
+      useClass: JwtAuthGuard,
     },
     {
       provide: APP_FILTER,

@@ -3,10 +3,9 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DatabaseModule } from '@pmp-back/database';
-import { JwtStrategy, JwtAuthGuard } from '@pmp-back/common';
+import { JwtStrategy, JwtAuthGuard, JwtRefreshStrategy } from '@pmp-back/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
-import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 import { APP_GUARD } from '@nestjs/core';
 
 @Module({
@@ -31,7 +30,7 @@ import { APP_GUARD } from '@nestjs/core';
     JwtRefreshStrategy,   
     {
       provide: APP_GUARD,
-      useClass: JwtAuthGuard,  // ✅ Depuis @pmp-back/common
+      useClass: JwtAuthGuard,
     },
   ],
   exports: [AuthService],
